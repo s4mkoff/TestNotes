@@ -12,27 +12,43 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        app:cardElevation="8dp"
+        app:cardCornerRadius="10dp">
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="4dp"
             android:orientation="vertical">
             <TextView
                 android:id="@+id/note_text"
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="wrap_content"
+                android:minHeight="100dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 android:gravity="start"
-                android:background="@color/cardview_shadow_end_color"
                 android:text="@{note.text}"
                 android:textSize="18sp"
-                tools:text="@tools:sample/lorem/random"/>
+                tools:text="@tools:sample/lorem"/>
 
             <TextView
+                android:id="@+id/note_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/note_text"
+                app:layout_constraintStart_toStartOf="@id/note_text"
                 android:text="@{note.date}"
                 android:textSize="18sp"
                 tools:text="Date"/>
-        </LinearLayout>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Title"
+                app:layout_constraintTop_toBottomOf="@id/note_text"
+                app:layout_constraintEnd_toEndOf="@id/note_text"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 </layout>

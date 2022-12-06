@@ -33,6 +33,7 @@ class NoteViewModel(
         }
     }
 
+
     private fun getDate(): String {
         val formatter = SimpleDateFormat("HH:mm yyyy.MM.dd", Locale.getDefault())
         val calendar = Calendar.getInstance()
@@ -41,7 +42,7 @@ class NoteViewModel(
 
     fun updateNote(
         id: Int,
-        text: String
+        text: String,
     ) {
         val note = Note(
             id = id,
@@ -58,6 +59,10 @@ class NoteViewModel(
         viewModelScope.launch(Dispatchers.IO){
             noteDao.delete(note)
         }
+    }
+
+    fun detectChanges(newText: String, oldText: String): Boolean {
+        return newText != oldText
     }
 
     fun isValidEntry(text : String): Boolean {

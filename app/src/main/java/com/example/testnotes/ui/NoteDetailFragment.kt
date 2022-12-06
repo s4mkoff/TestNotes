@@ -1,10 +1,8 @@
 package com.example.testnotes.ui
 
 import android.os.Bundle
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.activityViewModels
@@ -24,7 +22,7 @@ class NoteDetailFragment : Fragment() {
 
     private var _binding: FragmentNoteDetailBinding? = null
 
-    private lateinit var note: Note
+    private var note: Note? = null
 
     private val binding get() = _binding!!
 
@@ -39,16 +37,21 @@ class NoteDetailFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentNoteDetailBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val id = navigationArgs.id
+        viewModel.retrieveNote(id).observe(this.viewLifecycleOwner) {
+            selectedNote ->
+            note = selectedNote
+        }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (id>0) {
-                    updateNote()
+                    if (detectChanges() == true) {updateNote()}
                     findNavController().navigate(
                         R.id.action_noteDetailFragment_to_noteListFragment
                     )
@@ -71,12 +74,12 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
-//    private fun deleteNote(note: Note) {
-//        viewModel.deleteNote(note)
-//        findNavController().navigate(
-//            R.id.action_noteDetailFragment_to_noteListFragment
-//        )
-//    }
+    private fun deleteNote(note: Note) {
+        viewModel.deleteNote(note)
+        findNavController().navigate(
+            R.id.action_noteDetailFragment_to_noteListFragment
+        )
+    }
 
     private fun bindNote(id: Int) {
         if (id>0) {
@@ -89,6 +92,19 @@ class NoteDetailFragment : Fragment() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.detail_fragment_menu, menu)
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) { R.id.action_delete_note -> {
+            note?.let { deleteNote(it) }
+            return true }
+            else -> return super.onOptionsItemSelected(item)
+        }
+    }
+
     private fun updateNote() {
         if (isValidText()) {
             viewModel.updateNote(
@@ -96,6 +112,10 @@ class NoteDetailFragment : Fragment() {
                 text = binding.editNote.text.toString()
             )
         }
+    }
+
+    private fun detectChanges() = note?.let {
+        viewModel.detectChanges(binding.editNote.text.toString(), it.text)
     }
 
     private fun isValidText() = viewModel.isValidEntry(
